@@ -1,14 +1,20 @@
 import cv2
 import easyocr
+import os
 from PIL import Image
 
 reader = easyocr.Reader(["en", "es"], gpu=False)
 
+file = "test2"
+image = cv2.imread(f"data/{file}.png")
+image_solved = cv2.imread(f"data/{file}.png")
 
-image = cv2.imread("data/test1.png")
-image_solved = cv2.imread("data/test1.png")
+if not os.path.exists(f"frames/{file}"):
+    os.mkdir(f"frames/{file}")
+
 frame = None
 result = reader.readtext(image)
+
 matrix_wordsearch = []
 matrix_keywords = []
 basis_points = []
@@ -269,24 +275,24 @@ for word in matrix_keywords:
         cv2.line(image_solved, (points[0][1][0] - 82 * abs(axles[0][1] -6), (points[axles[0][0]][0][1] + 20)), ((points[0][0][0] + 40) + 82 * axles[-1][1], points[axles[-1][0]][0][1]), (255, 0, 0), 3)
         cv2.line(image_solved, ((points[0][0][0] + 20) + 82 * axles[0][1], points[axles[0][0]][2][1]), ((points[0][0][0] - 10) + 82 * axles[-1][1], (points[axles[-1][0]][2][1] - 20)), (255,0,0), 3)
 
-    cv2.imwrite(f"frames/frame{word}.png", image_solved)
-    frame = Image.open(f"frames/frame{word}.png")
+    cv2.imwrite(f"frames/{file}/frame{word}.png", image_solved)
+    frame = Image.open(f"frames/{file}/frame{word}.png")
     width, height = frame.size
 
     new_image = Image.new('RGB', (width + 600, height), color = 'black')
 
     new_image.paste(frame, (0,0))
 
-    new_image.save(f"frames/frame{word}.png")
+    new_image.save(f"frames/{file}/frame{word}.png")
 
-    frame = cv2.imread(f"frames/frame{word}.png")
+    frame = cv2.imread(f"frames/{file}/frame{word}.png")
 
     cv2.putText(frame, f"Word: {word}", (width + 100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 5)
 
     for index_row in range(len(compass_matrix)):
         cv2.putText(frame, str(compass_matrix[index_row]), (width + 50, 300 + (60 * index_row)), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 2)
 
-    cv2.imwrite(f"frames/frame{word}.png", frame)
+    cv2.imwrite(f"frames/{file}/frame{word}.png", frame)
 
     compass_matrix = [
     [0, 0, 0, 0, 0, 0, 0],
